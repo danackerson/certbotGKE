@@ -14,6 +14,7 @@ jobs:
       - run:
           name: Get Credentials
           command: |
+            ls -lrt $HOME/
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
             gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
@@ -49,12 +50,16 @@ jobs:
               --cert=/etc/letsencrypt/live/$PRIMARY_DOMAIN/fullchain.pem \
               --key=/etc/letsencrypt/live/$PRIMARY_DOMAIN/privkey.pem \
               --dry-run -o yaml | kubectl apply -f -
-                
+
 workflows:
   version: 2
   nightly:
     triggers:
       - schedule:
           cron: "0 0 11 * *"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - build
